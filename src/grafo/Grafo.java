@@ -54,21 +54,17 @@ public class Grafo {
         return tamDiagonal;
     }
 
-    public boolean insereLigacao(Vertice verticeLinha, Vertice verticeColuna, int pesoLigacao) {
+    public boolean insereLigacao(Vertice vertice1, Vertice vertice2, int pesoLigacao) {
+        return alteraLigacao(vertice1, vertice2, pesoLigacao) && alteraLigacao(vertice2, vertice1, pesoLigacao);
+    }
+
+    private boolean alteraLigacao(Vertice verticeLinha, Vertice verticeColuna, int pesoLigacao) {
         verificaExistencia(verticeLinha, verticeColuna);
-        HashMap<Vertice, Integer> coluna = null;
-        for (String key : matriz.keySet()) {
-            if (key.equals(verticeLinha.getNome())) {
-                coluna = matriz.get(key);
-                break;
-            }
-        }
-        if (coluna != null) {
-            for (Vertice atual : coluna.keySet()) {
-                if (atual.equals(verticeColuna)) {
-                    coluna.put(atual, pesoLigacao);
-                    return true;
-                }
+        HashMap<Vertice, Integer> colunas = matriz.get(verticeLinha.getNome());
+        if (colunas != null) {
+            if (colunas.containsKey(verticeColuna)) {
+                colunas.put(verticeColuna, pesoLigacao);
+                return true;
             }
         }
         return false;
@@ -82,5 +78,5 @@ public class Grafo {
             this.adicionaVertice(v2);
         }
     }
-    
+
 }
