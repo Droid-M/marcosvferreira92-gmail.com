@@ -7,7 +7,7 @@ import java.util.HashMap;
 public class Grafo {
 
     private int tamDiagonal;
-    HashMap<String, HashMap> matriz;
+    HashMap<String, HashMap<Vertice, Integer>> matriz;
 
     public Grafo() {
         tamDiagonal = 0;
@@ -28,7 +28,7 @@ public class Grafo {
     }
 
     private boolean atualizaLinhas(Vertice novo) {
-        Collection<HashMap> conjuntoLinhas = matriz.values();
+        Collection<HashMap<Vertice, Integer>> conjuntoLinhas = matriz.values();
         HashMap<Vertice, Integer> penultimaLinha = new HashMap();
         for (HashMap linhaAtual : conjuntoLinhas) {
             penultimaLinha = linhaAtual;
@@ -79,4 +79,7 @@ public class Grafo {
         }
     }
 
+    public HashMap<String, HashMap<Vertice, Integer>> getLinhas() {
+        return matriz;
+    }
 }
