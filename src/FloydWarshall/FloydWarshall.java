@@ -7,13 +7,13 @@ package FloydWarshall;
  */
 class FloydWarsall {
 
-    final static int INF = 99999, V = 1000;
+    final static int V = 1000;
     
     /**
      * Método de encontrar o menor caminho
      * @param graph É a matriz de adjacências
      * @return A matriz de solução do menor caminho
-     */
+     */ 
     
     public int[][] MenorCaminho(int graph[][]) { 
   
