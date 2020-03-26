@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import java.util.Random;
 
 public class GrafoMatrizesTest {
 
@@ -36,10 +37,23 @@ public class GrafoMatrizesTest {
     @Test
     public void testAdicionaVertice() {
         System.out.println("adicionaVertice");
-        Vertice novo = new Vertice("V1");
-        Grafo instance = new Grafo();
-        boolean result = instance.adicionaVertice(novo);
-        assertTrue(result);
+        Random random = new Random();
+        Grafo grafo = new Grafo();
+        for (int i = 0; i < 1000; i++) {
+            Vertice v1 = new Vertice(random.nextInt(9999999) + "");
+            while (!grafo.adicionaVertice(v1)) {
+                v1 = new Vertice(random.nextInt(9999999) + "");
+            }
+
+            Vertice v2 = new Vertice(random.nextInt(9999999) + "");
+            while (!grafo.adicionaVertice(v2)) {
+                v2 = new Vertice(random.nextInt(9999999) + "");
+            }
+
+            boolean insereLigacao = grafo.insereLigacao(v1, v2, random.nextInt(1000));
+            assertTrue(insereLigacao);
+        }
+        System.out.println(grafo.getTamDiagonal());
     }
 
     /**
