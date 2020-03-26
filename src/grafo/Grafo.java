@@ -82,4 +82,18 @@ public class Grafo {
     public HashMap<String, HashMap<Vertice, Integer>> getLinhas() {
         return matriz;
     }
+
+    public int[][] converteMatrizInteiros() {
+        int[][] matrizAdjacencia = new int[tamDiagonal][tamDiagonal];
+        int contI, contJ;
+        contI = contJ = 0;
+        for (HashMap<Vertice, Integer> coluna : matriz.values()) {
+            for (int pesoAtual : coluna.values()) {
+                matrizAdjacencia[contI][contJ] = pesoAtual;
+                contJ++;
+            }
+            contI++;
+        }
+        return matrizAdjacencia;
+    }
 }
