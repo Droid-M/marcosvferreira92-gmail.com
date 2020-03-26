@@ -18,13 +18,22 @@ public final class Dijkstra {
             distanciaS.put(minimo.getNome(), minimo);
             HashMap<Vertice, Integer> colunas = g.get(minimo.getNome());
             for (Vertice atual : colunas.keySet()) {
-                int distancia = somatorio(minimo.getDistanciaOrigem(), distancia(minimo, atual, g));
-                if (atual.getDistanciaOrigem() > distancia && !selecionados.containsValue(atual)) {
-                    atual.setAntecessor(minimo);
-                    atual.setDistanciaOrigem(distancia);
+                if (colunas.get(atual) != Integer.MAX_VALUE) {
+                    int distancia = somatorio(minimo.getDistanciaOrigem(), distancia(minimo, atual, g));
+                    if (atual.getDistanciaOrigem() > distancia && !selecionados.containsValue(atual)) {
+                        if (minimo.getNome().equals("v3")) {
+                            System.out.println("Distancia:"+distancia);
+                            System.out.println(distancia(minimo, atual, g));
+                        }
+                        atual.setAntecessor(minimo);
+                        atual.setDistanciaOrigem(distancia);
+                    }
                 }
             }
             minimo = extraiMinimo(origem, g);
+        }
+        for (String key : distanciaS.keySet()) {
+            System.out.println(key);
         }
         return distanciaS;
     }
@@ -76,6 +85,9 @@ public final class Dijkstra {
 
     private int distancia(Vertice vertice1, Vertice vertice2, HashMap<String, HashMap<Vertice, Integer>> g) {
         HashMap<Vertice, Integer> get = g.get(vertice1.getNome());
+        if (!get.containsKey(vertice2)) {
+            return Integer.MAX_VALUE;
+        }
         return get.get(vertice2);
     }
 

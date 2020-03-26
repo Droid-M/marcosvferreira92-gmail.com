@@ -30,7 +30,7 @@ public class Grafo {
     private boolean atualizaLinhas(Vertice novo) {
         Collection<HashMap<Vertice, Integer>> conjuntoLinhas = matriz.values();
         HashMap<Vertice, Integer> penultimaLinha = new HashMap();
-        for (HashMap linhaAtual : conjuntoLinhas) {
+        for (HashMap<Vertice, Integer> linhaAtual : conjuntoLinhas) {
             penultimaLinha = linhaAtual;
             linhaAtual.put(novo, Integer.MAX_VALUE);
         }
@@ -46,7 +46,7 @@ public class Grafo {
             ultimo = atual;
             novaLinha.put(atual, Integer.MAX_VALUE);
         }
-        novaLinha.put(ultimo, 0);
+        novaLinha.put(novo, 0);
         return novaLinha;
     }
 
