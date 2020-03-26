@@ -6,13 +6,19 @@ import java.util.HashMap;
 public final class Dijkstra {
 
     HashMap<String, Vertice> selecionados = new HashMap();
+    HashMap<String, Vertice> distanciaS = new HashMap();
 
     public HashMap menorCaminho(Vertice origem, HashMap<String, HashMap<Vertice, Integer>> g) {
         if (origem == null || g == null) {
             return null;
         }
         reinicializaNos(origem, g);
-        extraiMinimo(origem, g);
+        Vertice minimo = extraiMinimo(origem, g);
+        while (minimo != null) {
+            distanciaS.put(minimo.getNome(), minimo);
+            minimo = extraiMinimo(origem, g);
+        }
+
         return null;
     }
 
@@ -43,10 +49,16 @@ public final class Dijkstra {
             return null;
         }
         for (Vertice atual : colunas.keySet()) {
-           if (atual.getDistanciaOrigem() < menorPeso && !selecionados.containsValue(atual)) {
-               
-           }
+            if (atual.getDistanciaOrigem() < menorPeso && !selecionados.containsValue(atual)) {
+                minimo = atual;
+                menorPeso = atual.getDistanciaOrigem();
+            }
         }
+        if (minimo != null) {
+            selecionados.put(minimo.getNome(), minimo);
+            return minimo;
+        }
+        return null;
     }
 
 }
