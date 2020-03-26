@@ -37,9 +37,12 @@ public class FloydWarsallTest {
     @Test
     public void testMenorCaminho() {
         System.out.println("MenorCaminho");
-        int[][] graph = criaMatriz();
+        int[][] criaMatriz = criaMatriz();
+        System.out.println(criaMatriz.length);
+        int[][] graph = criaMatriz;
         FloydWarsall instance = new FloydWarsall();
         int[][] result = instance.MenorCaminho(graph);
+        System.out.println(result.length);
     }
 
     private int[][] criaMatriz() {

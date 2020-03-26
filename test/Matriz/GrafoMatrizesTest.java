@@ -51,7 +51,6 @@ public class GrafoMatrizesTest {
             }
 
             boolean insereLigacao = grafo.insereLigacao(v1, v2, random.nextInt(1000));
-            assertTrue(insereLigacao);
         }
         assertEquals(1000, grafo.getTamDiagonal());
         System.out.println(grafo.getTamDiagonal());

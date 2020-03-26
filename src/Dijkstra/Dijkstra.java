@@ -1,100 +1,124 @@
 package Dijkstra;
 
 import Vertice.Vertice;
-import java.util.HashMap;
+import grafo.Aresta;
+import java.util.LinkedList;
 
-public final class Dijkstra {
+/**
+ *
+ * @author Adryel e Marcos
+ */
+public class Dijkstra {
 
-    HashMap<String, Vertice> selecionados = new HashMap();
-    HashMap<String, Vertice> distanciaS = new HashMap();
+    private LinkedList<Vertice> distanciaQ; //Lista de vértices antes de passar pelo Dijkstra
+    private LinkedList<Vertice> distanciaS; //Lista de vértices depois de passar pelo Dijkstra
+    private LinkedList<Vertice> listaVisitados;
 
-    public HashMap<String, Vertice> menorCaminho(Vertice origem, HashMap<String, HashMap<Vertice, Integer>> g) {
-        if (origem == null || g == null) {
-            return null;
+    /**
+     * Recebe um vertice de partida e o grafo, e encontra o menor caminho
+     *
+     * @param pontoPartida Vertice do ponto de partida
+     * @param conjuntoVertices Grafo com o conjunto de todos os vertices
+     *
+     * @return A sequência dos vertices do menor caminho
+     */
+    public LinkedList<Vertice> obtemMenoresCaminhos(Vertice pontoPartida, LinkedList<Vertice> conjuntoVertices) {
+        if (conjuntoVertices.isEmpty()) {
+            return null; // Retorna nulo se o grafo estiver vazio
         }
-        reinicializaNos(origem, g);
-        Vertice minimo = extraiMinimo(origem, g);
-        while (minimo != null) {
-            distanciaS.put(minimo.getNome(), minimo);
-            HashMap<Vertice, Integer> colunas = g.get(minimo.getNome());
-            for (Vertice atual : colunas.keySet()) {
-                if (colunas.get(atual) != Integer.MAX_VALUE) {
-                    int distancia = somatorio(minimo.getDistanciaOrigem(), distancia(minimo, atual, g));
-                    if (atual.getDistanciaOrigem() > distancia && !selecionados.containsValue(atual)) {
-                        if (minimo.getNome().equals("v3")) {
-                            System.out.println("Distancia:"+distancia);
-                            System.out.println(distancia(minimo, atual, g));
-                        }
-                        atual.setAntecessor(minimo);
-                        atual.setDistanciaOrigem(distancia);
-                    }
+        listaVisitados = new LinkedList();
+        distanciaQ = conjuntoVertices;
+        reinicializaNos(pontoPartida, distanciaQ);
+        // A linha acima inicia a lista de custos do vertice de partida
+        // em relação todos os outros
+
+        distanciaS = new LinkedList();
+        while (!distanciaQ.isEmpty()) {
+            Vertice minimo = extraiMinimo(distanciaQ);
+            if (minimo == null) {
+                return distanciaS;
+            }
+            distanciaS.add(minimo);
+            Aresta[] arestasVerticeMinimo = constroiVetorArestas(minimo);
+            for (int i = 0; i < arestasVerticeMinimo.length; i++) {
+                Vertice adjcenteAtual = arestasVerticeMinimo[i].getFim();
+                int pesoLigacao = arestasVerticeMinimo[i].getPeso();
+                if (adjcenteAtual.getDistanciaOrigem() > minimo.getDistanciaOrigem() + pesoLigacao) {
+                    adjcenteAtual.setDistanciaOrigem(minimo.getDistanciaOrigem() + pesoLigacao);
+                    adjcenteAtual.setVerticeAntecessor(minimo);
                 }
             }
-            minimo = extraiMinimo(origem, g);
-        }
-        for (String key : distanciaS.keySet()) {
-            System.out.println(key);
         }
         return distanciaS;
     }
 
-    private void reinicializaNos(Vertice origem, HashMap<String, HashMap<Vertice, Integer>> g) {
-        for (String key : g.keySet()) {
-            HashMap<Vertice, Integer> colunas = g.get(key);
-            for (Vertice atual : colunas.keySet()) {
-                if (atual.equals(origem)) {
-                    atual.setDistanciaOrigem(0);
-                    atual.setAntecessor(null);
+    /**
+     * Método que reinicializa a lista de custos dos vertices
+     *
+     * @param origem Vertice referencial
+     * @param distanciaQ Lista de custos
+     */
+    private void reinicializaNos(Vertice origem, LinkedList<Vertice> distanciaQ) {
+        LinkedList<Vertice> vertices = distanciaQ;
+        for (int i = 0; i < vertices.size(); i++) {
+            Vertice atual = vertices.get(i);
+            if (atual.equals(origem)) {
+                atual.setDistanciaOrigem(0);
+                atual.setVerticeAntecessor(null);
+            }
+            else {
+                int pesoLigacaoOrigem = atual.getPesoLigacaoCom(origem);
+                if (pesoLigacaoOrigem > -1) {
+                    atual.setDistanciaOrigem(pesoLigacaoOrigem);
+                    atual.setVerticeAntecessor(origem);
                 }
                 else {
-                    if (key.equals(origem.getNome())) {
-                        int distanciaOrigem = colunas.get(atual);
-                        atual.setDistanciaOrigem(distanciaOrigem);
-                        atual.setAntecessor(origem);
-                    }
-                    else {
-                        atual.setDistanciaOrigem(Integer.MAX_VALUE);
-                        atual.setAntecessor(null);
-                    }
+                    atual.setDistanciaOrigem(Integer.MAX_VALUE);
+                    atual.setVerticeAntecessor(null);
                 }
             }
         }
     }
 
-    private Vertice extraiMinimo(Vertice antigoMinimo, HashMap<String, HashMap<Vertice, Integer>> g) {
-        if (antigoMinimo == null) {
-            return null;
-        }
-        HashMap<Vertice, Integer> colunas = g.get(antigoMinimo.getNome());
-        Vertice minimo = null;
-        int menorPeso = Integer.MAX_VALUE;
-        for (Vertice atual : colunas.keySet()) {
-            if (atual.getDistanciaOrigem() < menorPeso && !selecionados.containsValue(atual)) {
-                minimo = atual;
-                menorPeso = atual.getDistanciaOrigem();
+    /**
+     * Método que busca o vertice com a menor distância
+     *
+     * @param distanciaQ
+     * @return Retorna o vertice com a menor distância
+     */
+    private Vertice extraiMinimo(LinkedList<Vertice> distanciaQ) {
+        if (!distanciaQ.isEmpty()) {
+            LinkedList<Vertice> vertices = distanciaQ;
+            Vertice minimo, verticeAtual;
+            minimo = null;
+            int menorDistancia = Integer.MAX_VALUE;
+            for (int i = 0; i < vertices.size(); i++) {
+                verticeAtual = vertices.get(i);
+                int distanciaVerticeAtual = verticeAtual.getDistanciaOrigem();
+                if (distanciaVerticeAtual < menorDistancia && !listaVisitados.contains(verticeAtual)) {
+                    menorDistancia = distanciaVerticeAtual;
+                    minimo = verticeAtual;
+                }
             }
-        }
-        if (minimo != null) {
-            selecionados.put(minimo.getNome(), minimo);
+            listaVisitados.add(minimo);
             return minimo;
         }
-        else {
-            return extraiMinimo(antigoMinimo.getAntecessor(), g);
-        }
+        return null; // Retorna null caso não haja vertices
     }
 
-    private int distancia(Vertice vertice1, Vertice vertice2, HashMap<String, HashMap<Vertice, Integer>> g) {
-        HashMap<Vertice, Integer> get = g.get(vertice1.getNome());
-        if (!get.containsKey(vertice2)) {
-            return Integer.MAX_VALUE;
+    /**
+     * Método que constroi vetores de aresta
+     *
+     * @param minimo Verticie com distância menor
+     * @return Retorna um vetor com o tamanho da aresta
+     */
+    private Aresta[] constroiVetorArestas(Vertice minimo) {
+        int tamanho = minimo.getArestas().size();
+        Aresta[] vetor = new Aresta[tamanho];
+        for (int i = 0; i < tamanho; i++) {
+            vetor[i] = minimo.getArestas().get(i);
         }
-        return get.get(vertice2);
+        return vetor;
     }
 
-    private int somatorio(int valor1, int valor2) {
-        if (valor1 == Integer.MAX_VALUE || valor2 == Integer.MAX_VALUE) {
-            return Integer.MAX_VALUE;
-        }
-        return valor1 + valor2;
-    }
 }
