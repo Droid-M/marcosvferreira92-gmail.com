@@ -93,6 +93,7 @@ public class Grafo {
                 contJ++;
             }
             contI++;
+            contJ = 0;
         }
         return matrizAdjacencia;
     }

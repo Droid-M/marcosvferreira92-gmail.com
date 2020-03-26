@@ -6,9 +6,7 @@ package FloydWarshall;
  * @author Adryel
  */
 class FloydWarsall {
-
-    final static int V = 1000;
-    
+    int V;
     /**
      * Método de encontrar o menor caminho
      * @param graph É a matriz de adjacências
@@ -16,7 +14,7 @@ class FloydWarsall {
      */ 
     
     public int[][] MenorCaminho(int graph[][]) { 
-  
+        this.V = graph.length;
         int dist[][] = new int[V][V]; 
         int i, j, k; 
         
@@ -40,6 +38,7 @@ class FloydWarsall {
         }
         return dist;
     }
+    
     void printSolution(int dist[][]) 
     { 
        
