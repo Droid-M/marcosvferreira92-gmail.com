@@ -38,18 +38,17 @@ public class DijkstraTest {
     public void testMenorCaminho() {
         System.out.println("menorCaminho");
         Grafo g = new Grafo();
-        Vertice origem = new Vertice("v1");
+        Vertice origem = new Vertice("origem");
         Vertice v2 = new Vertice("v2");
         Vertice v3 = new Vertice("v3");
         Dijkstra instance = new Dijkstra();
         HashMap<String, Vertice> expResult = null;
         g.insereLigacao(origem, v2, 12);
-        g.insereLigacao(v3, origem, 2);
-        HashMap<String, Vertice> result = instance.menorCaminho(origem, g.getLinhas());
+        g.insereLigacao(origem, v3, 2);
+        g.insereLigacao(v2, v3, 14);
+        HashMap<String, Vertice> result = instance.menorCaminho(v2, g.getLinhas());
         assertNotEquals(expResult, result);
-        for (String key : result.keySet()) {
-            System.out.println(key);
-        }
+        System.out.println(v3.getAntecessor().getNome());
     }
 
 }
