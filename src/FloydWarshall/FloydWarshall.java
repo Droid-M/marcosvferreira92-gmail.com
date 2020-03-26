@@ -38,6 +38,18 @@ class FloydWarsall {
                 } 
             } 
         }
-        return graph;
+        return dist;
     }
+    void printSolution(int dist[][]) 
+    { 
+       
+        for (int i=0; i<V; ++i) 
+        { 
+            for (int j=0; j<V; ++j) 
+            { 
+                    System.out.print(dist[i][j]+"   "); 
+            } 
+            System.out.println(); 
+        } 
+    } 
  } 
