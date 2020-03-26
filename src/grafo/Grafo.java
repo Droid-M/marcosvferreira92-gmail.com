@@ -15,6 +15,9 @@ public class Grafo {
     }
 
     public boolean adicionaVertice(Vertice novo) {
+        if (novo == null || !(novo instanceof Vertice) || matriz.containsKey(novo.getNome())) {
+            return false;
+        }
         return atualizaLinhas(novo);
     }
 
@@ -25,9 +28,6 @@ public class Grafo {
     }
 
     private boolean atualizaLinhas(Vertice novo) {
-        if (novo == null || !(novo instanceof Vertice) || matriz.containsKey(novo.getNome())) {
-            return false;
-        }
         Collection<HashMap> conjuntoLinhas = matriz.values();
         HashMap<Vertice, Integer> penultimaLinha = new HashMap();
         for (HashMap linhaAtual : conjuntoLinhas) {
