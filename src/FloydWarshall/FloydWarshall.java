@@ -7,10 +7,10 @@ package FloydWarshall;
  */
 class AllPairShortestPath 
 { 
-    final static int INF = 99999;
+    final static int INF = 99999, V = 1000;
     
   
-    void floydWarshall(int graph[][], int V) 
+    void floydWarshall(int graph[][]) 
     { 
         int dist[][] = new int[V][V]; 
         int i, j, k; 
