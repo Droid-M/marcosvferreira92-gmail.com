@@ -7,7 +7,7 @@ import java.util.HashMap;
 public class Grafo {
 
     private int tamDiagonal;
-    HashMap<String, HashMap> matriz;
+    HashMap<String, HashMap<Vertice, Integer>> matriz;
 
     public Grafo() {
         tamDiagonal = 0;
@@ -15,6 +15,9 @@ public class Grafo {
     }
 
     public boolean adicionaVertice(Vertice novo) {
+        if (novo == null || !(novo instanceof Vertice) || matriz.containsKey(novo.getNome())) {
+            return false;
+        }
         return atualizaLinhas(novo);
     }
 
@@ -25,10 +28,7 @@ public class Grafo {
     }
 
     private boolean atualizaLinhas(Vertice novo) {
-        if (novo == null || !(novo instanceof Vertice) || matriz.containsKey(novo.getNome())) {
-            return false;
-        }
-        Collection<HashMap> conjuntoLinhas = matriz.values();
+        Collection<HashMap<Vertice, Integer>> conjuntoLinhas = matriz.values();
         HashMap<Vertice, Integer> penultimaLinha = new HashMap();
         for (HashMap linhaAtual : conjuntoLinhas) {
             penultimaLinha = linhaAtual;
@@ -54,21 +54,17 @@ public class Grafo {
         return tamDiagonal;
     }
 
-    public boolean insereLigacao(Vertice verticeLinha, Vertice verticeColuna, int pesoLigacao) {
+    public boolean insereLigacao(Vertice vertice1, Vertice vertice2, int pesoLigacao) {
+        return alteraLigacao(vertice1, vertice2, pesoLigacao) && alteraLigacao(vertice2, vertice1, pesoLigacao);
+    }
+
+    private boolean alteraLigacao(Vertice verticeLinha, Vertice verticeColuna, int pesoLigacao) {
         verificaExistencia(verticeLinha, verticeColuna);
-        HashMap<Vertice, Integer> coluna = null;
-        for (String key : matriz.keySet()) {
-            if (key.equals(verticeLinha.getNome())) {
-                coluna = matriz.get(key);
-                break;
-            }
-        }
-        if (coluna != null) {
-            for (Vertice atual : coluna.keySet()) {
-                if (atual.equals(verticeColuna)) {
-                    coluna.put(atual, pesoLigacao);
-                    return true;
-                }
+        HashMap<Vertice, Integer> colunas = matriz.get(verticeLinha.getNome());
+        if (colunas != null) {
+            if (colunas.containsKey(verticeColuna)) {
+                colunas.put(verticeColuna, pesoLigacao);
+                return true;
             }
         }
         return false;
@@ -82,5 +78,8 @@ public class Grafo {
             this.adicionaVertice(v2);
         }
     }
-    
+
+    public HashMap<String, HashMap<Vertice, Integer>> getLinhas() {
+        return matriz;
+    }
 }

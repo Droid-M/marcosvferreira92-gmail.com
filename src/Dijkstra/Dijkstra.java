@@ -8,7 +8,7 @@ public final class Dijkstra {
     HashMap<String, Vertice> selecionados = new HashMap();
     HashMap<String, Vertice> distanciaS = new HashMap();
 
-    public HashMap menorCaminho(Vertice origem, HashMap<String, HashMap<Vertice, Integer>> g) {
+    public HashMap<String, Vertice> menorCaminho(Vertice origem, HashMap<String, HashMap<Vertice, Integer>> g) {
         if (origem == null || g == null) {
             return null;
         }
@@ -16,25 +16,36 @@ public final class Dijkstra {
         Vertice minimo = extraiMinimo(origem, g);
         while (minimo != null) {
             distanciaS.put(minimo.getNome(), minimo);
+            HashMap<Vertice, Integer> colunas = g.get(minimo.getNome());
+            for (Vertice atual : colunas.keySet()) {
+                int distancia = somatorio(minimo.getDistanciaOrigem(), distancia(minimo, atual, g));
+                if (atual.getDistanciaOrigem() > distancia && !selecionados.containsValue(atual)) {
+                    atual.setAntecessor(minimo);
+                    atual.setDistanciaOrigem(distancia);
+                }
+            }
             minimo = extraiMinimo(origem, g);
         }
-
-        return null;
+        return distanciaS;
     }
 
     private void reinicializaNos(Vertice origem, HashMap<String, HashMap<Vertice, Integer>> g) {
         for (String key : g.keySet()) {
-            HashMap<Vertice, Integer> get = g.get(key);
-            for (Vertice atual : get.keySet()) {
+            HashMap<Vertice, Integer> colunas = g.get(key);
+            for (Vertice atual : colunas.keySet()) {
                 if (atual.equals(origem)) {
                     atual.setDistanciaOrigem(0);
+                    atual.setAntecessor(null);
                 }
                 else {
                     if (key.equals(origem.getNome())) {
-                        atual.setDistanciaOrigem(get.get(atual));
+                        int distanciaOrigem = colunas.get(atual);
+                        atual.setDistanciaOrigem(distanciaOrigem);
+                        atual.setAntecessor(origem);
                     }
                     else {
                         atual.setDistanciaOrigem(Integer.MAX_VALUE);
+                        atual.setAntecessor(null);
                     }
                 }
             }
@@ -61,5 +72,17 @@ public final class Dijkstra {
         else {
             return extraiMinimo(antigoMinimo.getAntecessor(), g);
         }
+    }
+
+    private int distancia(Vertice vertice1, Vertice vertice2, HashMap<String, HashMap<Vertice, Integer>> g) {
+        HashMap<Vertice, Integer> get = g.get(vertice1.getNome());
+        return get.get(vertice2);
+    }
+
+    private int somatorio(int valor1, int valor2) {
+        if (valor1 == Integer.MAX_VALUE || valor2 == Integer.MAX_VALUE) {
+            return Integer.MAX_VALUE;
+        }
+        return valor1 + valor2;
     }
 }
