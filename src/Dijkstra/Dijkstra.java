@@ -42,12 +42,12 @@ public final class Dijkstra {
     }
 
     private Vertice extraiMinimo(Vertice antigoMinimo, HashMap<String, HashMap<Vertice, Integer>> g) {
+        if (antigoMinimo == null) {
+            return null;
+        }
         HashMap<Vertice, Integer> colunas = g.get(antigoMinimo.getNome());
         Vertice minimo = null;
         int menorPeso = Integer.MAX_VALUE;
-        if (colunas == null) {
-            return null;
-        }
         for (Vertice atual : colunas.keySet()) {
             if (atual.getDistanciaOrigem() < menorPeso && !selecionados.containsValue(atual)) {
                 minimo = atual;
@@ -58,7 +58,8 @@ public final class Dijkstra {
             selecionados.put(minimo.getNome(), minimo);
             return minimo;
         }
-        return null;
+        else {
+            return extraiMinimo(antigoMinimo.getAntecessor(), g);
+        }
     }
-
 }
