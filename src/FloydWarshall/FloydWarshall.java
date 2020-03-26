@@ -5,13 +5,12 @@ package FloydWarshall;
  *
  * @author Adryel
  */
-class AllPairShortestPath 
-{ 
+class FloydWarsall {
+
     final static int INF = 99999, V = 1000;
     
+    void MenorCaminho(int graph[][]) { 
   
-    void floydWarshall(int graph[][]) 
-    { 
         int dist[][] = new int[V][V]; 
         int i, j, k; 
   
