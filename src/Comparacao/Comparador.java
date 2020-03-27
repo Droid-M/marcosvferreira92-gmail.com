@@ -15,12 +15,12 @@ public class Comparador {
 
     private static Dijkstra d = new Dijkstra();
     private static FloydWarsall f = new FloydWarsall();
-
+    private static final int numeroTestes = 10;
     public static void main(String[] args) {
 
-        float[] tempoDijkstra = new float[10];
-        float[] tempoFloyd = new float[10];
-        for (int i = 0; i < 10; i++) {
+        float[] tempoDijkstra = new float[numeroTestes];
+        float[] tempoFloyd = new float[numeroTestes];
+        for (int i = 0; i < numeroTestes; i++) {
             GrafoAleatorio gerador = new GrafoAleatorio(500);
             Grafo grafo = gerador.geraGrafo();
 
@@ -80,21 +80,21 @@ public class Comparador {
 
     private static float calculaMedia(float[] valores) {
         float media = 0;
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < numeroTestes; i++) {
             media += valores[i];
         }
-        return media / 10;
+        return media / numeroTestes;
     }
 
     private static double calculaVariancia(float media, float[] valores) {
         double variancia = 0;
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < numeroTestes; i++) {
             variancia += (Math.pow(valores[i] - media, 2));
         }
         return variancia;
     }
 
     private static double calculaDesvioPadrao(double variancia) {
-        return Math.sqrt(variancia) / 10;
+        return Math.sqrt(variancia) / numeroTestes;
     }
 }
