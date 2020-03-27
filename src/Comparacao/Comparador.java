@@ -18,8 +18,8 @@ public class Comparador {
     private static final int numeroTestes = 10;
     public static void main(String[] args) {
 
-        float[] tempoDijkstra = new float[numeroTestes];
-        float[] tempoFloyd = new float[numeroTestes];
+        long[] tempoDijkstra = new long[numeroTestes];
+        long[] tempoFloyd = new long[numeroTestes];
         for (int i = 0; i < numeroTestes; i++) {
             GrafoAleatorio gerador = new GrafoAleatorio(500);
             Grafo grafo = gerador.geraGrafo();
@@ -33,8 +33,8 @@ public class Comparador {
             tempoFloyd[i] = testeFloyW(matriz);
         }
 
-        float mediaDijk = calculaMedia(tempoDijkstra);
-        float mediaFloyd = calculaMedia(tempoFloyd);
+        long mediaDijk = calculaMedia(tempoDijkstra);
+        long mediaFloyd = calculaMedia(tempoFloyd);
 
         if (mediaDijk < mediaFloyd) {
             System.out.println("O dijkstra foi mais rápido no quesito média: " + mediaDijk);
@@ -43,8 +43,8 @@ public class Comparador {
             System.out.println("O FloydWarsall foi mais rápido no quesito média: " + mediaFloyd);
         }
 
-        double varianciaDijk = calculaVariancia(mediaDijk, tempoDijkstra);
-        double varianciaFloyd = calculaVariancia(mediaFloyd, tempoFloyd);
+        long varianciaDijk = calculaVariancia(mediaDijk, tempoDijkstra);
+        long varianciaFloyd = calculaVariancia(mediaFloyd, tempoFloyd);
 
         if (mediaDijk < mediaFloyd) {
             System.out.println("O dijkstra foi mais rápido no quesito variância: " + varianciaDijk);
@@ -53,8 +53,8 @@ public class Comparador {
             System.out.println("O FloydWarsall foi mais rápido no quesito variância: " + varianciaFloyd);
         }
 
-        double desvioDijk = calculaDesvioPadrao(varianciaDijk);
-        double desvioFloyd = calculaDesvioPadrao(varianciaFloyd);
+        long desvioDijk = calculaDesvioPadrao(varianciaDijk);
+        long desvioFloyd = calculaDesvioPadrao(varianciaFloyd);
 
         if (mediaDijk < mediaFloyd) {
             System.out.println("O dijkstra foi mais rápido no quesito desvio: " + desvioDijk);
@@ -64,37 +64,37 @@ public class Comparador {
         }
     }
 
-    private static float testeDijkstra(Vertice origem, LinkedList<Vertice> lista) {
+    private static long testeDijkstra(Vertice origem, LinkedList<Vertice> lista) {
         long inicio = System.currentTimeMillis();
         d.obtemMenoresCaminhos(origem, lista);
         long fim = System.currentTimeMillis();
-        return (float) fim - inicio;
+        return fim - inicio;
     }
 
-    private static float testeFloyW(int[][] matriz) {
+    private static long testeFloyW(int[][] matriz) {
         long inicio = System.currentTimeMillis();
         f.MenorCaminho(matriz);
         long fim = System.currentTimeMillis();
-        return (float) fim - inicio;
+        return fim - inicio;
     }
 
-    private static float calculaMedia(float[] valores) {
-        float media = 0;
+    private static long calculaMedia(long[] valores) {
+        long media = 0;
         for (int i = 0; i < numeroTestes; i++) {
             media += valores[i];
         }
         return media / numeroTestes;
     }
 
-    private static double calculaVariancia(float media, float[] valores) {
-        double variancia = 0;
+    private static long calculaVariancia(long media, long[] valores) {
+        long variancia = 0;
         for (int i = 0; i < numeroTestes; i++) {
             variancia += (Math.pow(valores[i] - media, 2));
         }
         return variancia;
     }
 
-    private static double calculaDesvioPadrao(double variancia) {
-        return Math.sqrt(variancia) / numeroTestes;
+    private static long calculaDesvioPadrao(long variancia) {
+        return (long) (Math.sqrt(variancia) / numeroTestes);
     }
 }
