@@ -15,7 +15,8 @@ public class Comparador {
 
     private static Dijkstra d = new Dijkstra();
     private static FloydWarsall f = new FloydWarsall();
-    private static final int numeroTestes = 2;
+    private static final int numeroTestes = 10;
+
     public static void main(String[] args) {
 
         long[] tempoDijkstra = new long[numeroTestes];
@@ -29,8 +30,8 @@ public class Comparador {
             grafo.preparaParaDijkstra(origem.getNome(), lista);
             int[][] matriz = grafo.converteMatrizInteiros();
 
-            tempoDijkstra[i] = testeDijkstra(origem, lista);
             tempoFloyd[i] = testeFloyW(matriz);
+            tempoDijkstra[i] = testeDijkstra(origem, lista);
         }
 
         long mediaDijk = calculaMedia(tempoDijkstra);
@@ -38,29 +39,36 @@ public class Comparador {
 
         if (mediaDijk < mediaFloyd) {
             System.out.println("O dijkstra foi mais rápido no quesito média: " + mediaDijk);
+            System.out.println("Tempo do FloydWarsall: " + mediaFloyd);
+
         }
         else {
             System.out.println("O FloydWarsall foi mais rápido no quesito média: " + mediaFloyd);
+            System.out.println("Resultado do Dijkstra:" + mediaDijk);
         }
 
         long varianciaDijk = calculaVariancia(mediaDijk, tempoDijkstra);
         long varianciaFloyd = calculaVariancia(mediaFloyd, tempoFloyd);
 
         if (varianciaDijk < varianciaFloyd) {
-            System.out.println("O dijkstra foi mais rápido no quesito variância: " + varianciaDijk);
+            System.out.println("O dijkstra teve menor variância: " + varianciaDijk);
+            System.out.println("Tempo do FloydWarsall: " + varianciaFloyd);
         }
         else {
-            System.out.println("O FloydWarsall foi mais rápido no quesito variância: " + varianciaFloyd);
+            System.out.println("O FloydWarsall teve menor variância: " + varianciaFloyd);
+            System.out.println("Resultado do Dijkstra:" + varianciaDijk);
         }
 
         long desvioDijk = calculaDesvioPadrao(varianciaDijk);
         long desvioFloyd = calculaDesvioPadrao(varianciaFloyd);
 
         if (desvioDijk < desvioFloyd) {
-            System.out.println("O dijkstra foi mais rápido no quesito desvio: " + desvioDijk);
+            System.out.println("O dijkstra teve menor desvio: " + desvioDijk);
+            System.out.println("Tempo do FloydWarsall: " + desvioFloyd);
         }
         else {
-            System.out.println("O FloydWarsall foi mais rápido no quesito desvio: " + desvioFloyd);
+            System.out.println("O FloydWarsall teve menor desvio: " + desvioFloyd);
+            System.out.println("Resultado do Dijkstra:" + desvioDijk);
         }
     }
 
@@ -95,6 +103,6 @@ public class Comparador {
     }
 
     private static long calculaDesvioPadrao(long variancia) {
-        return (long) (Math.sqrt(variancia) / numeroTestes);
+        return (long) Math.sqrt(variancia);
     }
 }
