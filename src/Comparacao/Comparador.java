@@ -15,7 +15,7 @@ public class Comparador {
 
     private static Dijkstra d = new Dijkstra();
     private static FloydWarsall f = new FloydWarsall();
-    private static final int numeroTestes = 10;
+    private static final int numeroTestes = 2;
     public static void main(String[] args) {
 
         long[] tempoDijkstra = new long[numeroTestes];
@@ -46,7 +46,7 @@ public class Comparador {
         long varianciaDijk = calculaVariancia(mediaDijk, tempoDijkstra);
         long varianciaFloyd = calculaVariancia(mediaFloyd, tempoFloyd);
 
-        if (mediaDijk < mediaFloyd) {
+        if (varianciaDijk < varianciaFloyd) {
             System.out.println("O dijkstra foi mais rápido no quesito variância: " + varianciaDijk);
         }
         else {
@@ -56,7 +56,7 @@ public class Comparador {
         long desvioDijk = calculaDesvioPadrao(varianciaDijk);
         long desvioFloyd = calculaDesvioPadrao(varianciaFloyd);
 
-        if (mediaDijk < mediaFloyd) {
+        if (desvioDijk < desvioFloyd) {
             System.out.println("O dijkstra foi mais rápido no quesito desvio: " + desvioDijk);
         }
         else {
