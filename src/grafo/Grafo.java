@@ -1,100 +1,254 @@
 package grafo;
 
+import ListaEncadeada.ListaEncadeada;
+import ListaEncadeada.No;
 import Vertice.Vertice;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedList;
 
 public class Grafo {
 
-    private int tamDiagonal;
-    HashMap<String, HashMap<Vertice, Integer>> matriz;
+    int numeroLinhasColunas = 0;
+    ListaEncadeada<ListaEncadeada> colunas;
+    LinkedList<Vertice> vertices;
 
     public Grafo() {
-        tamDiagonal = 0;
-        matriz = new HashMap();
+        this.colunas = new ListaEncadeada();
     }
 
-    public boolean adicionaVertice(Vertice novo) {
-        if (novo == null || !(novo instanceof Vertice) || matriz.containsKey(novo.getNome())) {
-            return false;
-        }
-        return atualizaLinhas(novo);
-    }
-
-    private HashMap<Vertice, Integer> criaColuna(Vertice novo) {
-        HashMap<Vertice, Integer> novaColuna = new HashMap();
-        novaColuna.put(novo, 0);
-        return novaColuna;
-    }
-
-    private boolean atualizaLinhas(Vertice novo) {
-        Collection<HashMap<Vertice, Integer>> conjuntoLinhas = matriz.values();
-        HashMap<Vertice, Integer> penultimaLinha = new HashMap();
-        for (HashMap<Vertice, Integer> linhaAtual : conjuntoLinhas) {
-            penultimaLinha = linhaAtual;
-            linhaAtual.put(novo, Integer.MAX_VALUE);
-        }
-        matriz.put(novo.getNome(), criaLinha(penultimaLinha, novo));
-        tamDiagonal++;
-        return true;
-    }
-
-    private HashMap<Vertice, Integer> criaLinha(HashMap<Vertice, Integer> penultimaLinha, Vertice novo) {
-        HashMap<Vertice, Integer> novaLinha = new HashMap();
-        Vertice ultimo = novo;
-        for (Vertice atual : penultimaLinha.keySet()) {
-            ultimo = atual;
-            novaLinha.put(atual, Integer.MAX_VALUE);
-        }
-        novaLinha.put(novo, 0);
-        return novaLinha;
-    }
-
-    public int getTamDiagonal() {
-        return tamDiagonal;
-    }
-
-    public boolean insereLigacao(Vertice vertice1, Vertice vertice2, int pesoLigacao) {
-        return alteraLigacao(vertice1, vertice2, pesoLigacao) && alteraLigacao(vertice2, vertice1, pesoLigacao);
-    }
-
-    private boolean alteraLigacao(Vertice verticeLinha, Vertice verticeColuna, int pesoLigacao) {
-        verificaExistencia(verticeLinha, verticeColuna);
-        HashMap<Vertice, Integer> colunas = matriz.get(verticeLinha.getNome());
-        if (colunas != null) {
-            if (colunas.containsKey(verticeColuna)) {
-                colunas.put(verticeColuna, pesoLigacao);
-                return true;
-            }
+    public boolean adicionaVertice(String nomeVertice) {
+        int tamanhoMatrizAntes = colunas.getTamanho();
+        adicionaColunasELinhas(nomeVertice);
+        if (tamanhoMatrizAntes != colunas.getTamanho()) {
+            numeroLinhasColunas++;
+            return true;
         }
         return false;
     }
 
-    private void verificaExistencia(Vertice v1, Vertice v2) {
-        if (!matriz.containsKey(v1.getNome())) {
-            this.adicionaVertice(v1);
+    public boolean removeVertice(String nomeVertice) {
+        boolean remocaoEfetuada = true;
+        remocaoEfetuada = colunas.remove(nomeVertice) == null ? false : remocaoEfetuada;
+        No<ListaEncadeada> noAux = colunas.getRaiz();
+        while (noAux != null) {
+            ListaEncadeada<Integer> noAux2 = noAux.getDado();
+            remocaoEfetuada = noAux2.remove(nomeVertice) == null ? false : remocaoEfetuada;
+            noAux = noAux.getProximo();
         }
-        if (!matriz.containsKey(v2.getNome())) {
-            this.adicionaVertice(v2);
+        if (remocaoEfetuada) {
+            numeroLinhasColunas--;
+        }
+        return remocaoEfetuada;
+    }
+
+    private ListaEncadeada<Integer> criaLinhas(ListaEncadeada<Integer> penultimaColuna, String nomeVertice) {
+        ListaEncadeada<Integer> linhasCriadas = new ListaEncadeada();
+        String nomeLinha;
+        if (penultimaColuna != null) {
+            No<Integer> noAux = penultimaColuna.getRaiz();
+            for (int i = 1; i < penultimaColuna.getTamanho(); i++) {
+                nomeLinha = noAux.getIdentificador();
+                linhasCriadas.adiciona(Integer.MAX_VALUE, nomeLinha);
+                noAux = noAux.getProximo();
+            }
+            nomeLinha = noAux.getIdentificador();
+        }
+        else {
+            nomeLinha = nomeVertice;
+        }
+        linhasCriadas.adiciona(0, nomeLinha);
+        return linhasCriadas;
+    }
+
+    private void adicionaColunasELinhas(String nomeVertice) {
+        ListaEncadeada<Integer> linhasNovas;
+        No<ListaEncadeada> noAux = colunas.getRaiz();
+        ListaEncadeada<Integer> penultimaColuna = null;
+        int tamanhoAntes = 0;
+        int tamanhoDepois = 1;
+        while (noAux != null) {
+            tamanhoAntes = noAux.getDado().getTamanho();
+            noAux.getDado().adiciona(Integer.MAX_VALUE, nomeVertice);
+            tamanhoDepois = noAux.getDado().getTamanho();
+            penultimaColuna = noAux.getDado();
+            noAux = noAux.getProximo();
+        }
+        if (tamanhoAntes == tamanhoDepois - 1) {
+            linhasNovas = criaLinhas(penultimaColuna, nomeVertice);
+            colunas.adiciona(linhasNovas, nomeVertice);
         }
     }
 
-    public HashMap<String, HashMap<Vertice, Integer>> getLinhas() {
-        return matriz;
+    public No<Integer> procuraPesoLigacao(String nomeColunaProcurada, String nomeLinhaProcurada) {
+        No<ListaEncadeada> noAux = colunas.getRaiz();
+        while (noAux != null) {
+            String nomeColunaAtual = noAux.getIdentificador();
+            if (nomeColunaProcurada.equals(nomeColunaAtual)) {
+                No<Integer> noAux2 = noAux.getDado().getRaiz();
+                while (noAux2 != null) {
+                    String nomeLinhaAtual = noAux2.getIdentificador();
+                    if (nomeLinhaProcurada.equals(nomeLinhaAtual)) {
+                        return noAux2;
+                    }
+                    noAux2 = noAux2.getProximo();
+                }
+            }
+            noAux = noAux.getProximo();
+        }
+        return null;
+    }
+
+    public void setPesoLigacao(String v1, String v2, int novoPeso) {
+        No<Integer> resultado = procuraPesoLigacao(v1, v2);
+        if (resultado != null) {
+            resultado.setDado(novoPeso);
+            resultado = procuraPesoLigacao(v2, v1);
+            resultado.setDado(novoPeso);
+        }
+        else {
+            adicionaVertice(v1);
+            adicionaVertice(v2);
+            setPesoLigacao(v1, v2, novoPeso);
+        }
+    }
+
+    public int getPesoLigacao(int coluna, int linha) {
+        No<Integer> resultado = vasculhaMatriz(coluna, linha);
+        if (resultado == null) {
+            return -2;
+        }
+        return resultado.getDado();
+    }
+
+    public int getPesoLigacao(String nomeColuna, String nomeLinha) {
+        No<Integer> resultado = procuraPesoLigacao(nomeColuna, nomeLinha);
+        if (resultado == null) {
+            return -2;
+        }
+        return resultado.getDado();
+    }
+
+    public int getNumeroLinhasColunas() {
+        return numeroLinhasColunas;
+    }
+
+    private No<Integer> vasculhaMatriz(int posicaoColuna, int posicaoLinha) {
+        No<ListaEncadeada> noAux = colunas.getRaiz();
+        while (noAux != null && posicaoColuna > 0) {
+            noAux = noAux.getProximo();
+            posicaoColuna--;
+        }
+        if (noAux != null) {
+            No<Integer> noAux2 = noAux.getDado().getRaiz();
+            while (noAux2 != null && posicaoLinha > 0) {
+                noAux2 = noAux2.getProximo();
+                posicaoLinha--;
+            }
+            if (noAux2 != null) {
+                return noAux2;
+            }
+        }
+        return null;
+    }
+
+    public boolean estaVazio() {
+        return colunas.estaVazio() && numeroLinhasColunas == 0;
+    }
+
+    public ListaEncadeada<ListaEncadeada> getColunas() {
+        return colunas;
+    }
+
+    public String[] getVetorNomeVertices() {
+        String[] listaNomes = new String[numeroLinhasColunas];
+        int indice = 0;
+        No<ListaEncadeada> noAux = colunas.getRaiz();
+        while (noAux != null) {
+            listaNomes[indice] = noAux.getIdentificador();
+            indice++;
+            noAux = noAux.getProximo();
+        }
+        return listaNomes;
+    }
+
+    public No<ListaEncadeada> obtemColuna(String nomeVertice) {
+        No<ListaEncadeada> noAux = colunas.getRaiz();
+        while (noAux != null) {
+            if (noAux.getIdentificador().equals(nomeVertice)) {
+                return noAux;
+            }
+            noAux = noAux.getProximo();
+        }
+        return null;
     }
 
     public int[][] converteMatrizInteiros() {
-        int[][] matrizAdjacencia = new int[tamDiagonal][tamDiagonal];
-        int contI, contJ;
-        contI = contJ = 0;
-        for (HashMap<Vertice, Integer> coluna : matriz.values()) {
-            for (int pesoAtual : coluna.values()) {
-                matrizAdjacencia[contI][contJ] = pesoAtual;
-                contJ++;
+        int[][] matriz = new int[numeroLinhasColunas][numeroLinhasColunas];
+        int i, j;
+        i = j = 0;
+        No<ListaEncadeada> noAux = colunas.getRaiz();
+        while (noAux != null) {
+            No<Integer> noAux2 = noAux.getDado().getRaiz();
+            while (noAux2 != null) {
+                matriz[i][j] = noAux2.getDado();
+                noAux2 = noAux2.getProximo();
+                j++;
             }
-            contI++;
-            contJ = 0;
+            i++;
+            j = 0;
+            noAux = noAux.getProximo();
         }
-        return matrizAdjacencia;
+        return matriz;
+    }
+
+    public LinkedList<Vertice> converteListaVerticess() {
+        No<ListaEncadeada> noAux = colunas.getRaiz();
+        vertices = new LinkedList();
+        Vertice v;
+        while (noAux != null) {
+            No<Integer> noAux2 = noAux.getDado().getRaiz();
+            v = new Vertice(noAux.getIdentificador());
+            while (noAux2 != null) {
+                if (!noAux2.getIdentificador().equals(noAux.getIdentificador())
+                        && noAux2.getDado() != Integer.MAX_VALUE) {
+                    Vertice adj = new Vertice(noAux2.getIdentificador());
+                    v.adicionaAresta(adj, noAux2.getDado());
+                }
+                noAux2 = noAux2.getProximo();
+            }
+            vertices.add(v);
+            noAux = noAux.getProximo();
+        }
+        return vertices;
+    }
+
+    public void preparaParaDijkstra(String nomeVertice, LinkedList<Vertice> emPreparacao) {
+        for (int i = 0; i < emPreparacao.size(); i++) {
+            Vertice atual = emPreparacao.get(i);
+            if (atual.getNome().equals(nomeVertice)) {
+                atual.setDistanciaOrigem(0);
+                atual.setVerticeAntecessor(null);
+            }
+            else {
+                int pesoLigacaoOrigem = atual.getPesoLigacaoCom(nomeVertice);
+                if (pesoLigacaoOrigem != Integer.MAX_VALUE) {
+                    atual.setDistanciaOrigem(pesoLigacaoOrigem);
+                    atual.setVerticeAntecessor(buscaVertice(nomeVertice));
+                }
+                else {
+                    atual.setDistanciaOrigem(Integer.MAX_VALUE);
+                    atual.setVerticeAntecessor(null);
+                }
+            }
+        }
+    }
+
+    public Vertice buscaVertice(String nomeVertice) {
+        for (int i = 0; i < vertices.size(); i++) {
+            Vertice atual = vertices.get(i);
+            if (atual.getNome().equals(nomeVertice)) {
+                return atual;
+            }
+        }
+        return null;
     }
 }

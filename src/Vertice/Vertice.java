@@ -1,6 +1,6 @@
 package Vertice;
 
-import grafo.Aresta;
+import Aresta.Aresta;
 import java.util.LinkedList;
 
 /**
@@ -47,18 +47,22 @@ public class Vertice {
     /**
      * Método que retorna o peso de uma aresta com base em um vertice adjacente
      *
-     * @param adjacente Vertice adjacente de outro vertice
+     * @param nome Nome do vertice de peso de ligação buscado
      * @return Retorna o peso da aresta
      */
-    public int getPesoLigacaoCom(Vertice adjacente) {
+    public int getPesoLigacaoCom(String nome) {
         for (int i = 0; i < arestas.size(); i++) {
             Aresta arestaAtual = arestas.get(i);
             Vertice verticeAtual = arestaAtual.getFim();
-            if (verticeAtual.equals(adjacente)) {
+            if (verticeAtual.getNome().equals(nome)) {
                 return arestaAtual.getPeso();
             }
         }
-        return -1; // O Método retorna -1 caso não haja ligação
+        return Integer.MAX_VALUE;
+    }
+
+    public int getPesoLigacaoCom(Vertice adjacente) {
+        return getPesoLigacaoCom(adjacente.getNome());
     }
 
     /**
@@ -105,7 +109,6 @@ public class Vertice {
     public Vertice getVerticeAntecessor() {
         return this.antecessor;
     }
-
 
     /**
      * Método que remove aresta entre dois vertices

@@ -1,4 +1,4 @@
-package grafo;
+package Aresta;
 
 import Vertice.Vertice;
 

@@ -1,7 +1,7 @@
 package Dijkstra;
 
 import Vertice.Vertice;
-import grafo.Aresta;
+import Aresta.Aresta;
 import java.util.LinkedList;
 
 /**
@@ -28,7 +28,6 @@ public class Dijkstra {
         }
         listaVisitados = new LinkedList();
         distanciaQ = conjuntoVertices;
-        reinicializaNos(pontoPartida, distanciaQ);
         // A linha acima inicia a lista de custos do vertice de partida
         // em relação todos os outros
 
@@ -39,10 +38,10 @@ public class Dijkstra {
                 return distanciaS;
             }
             distanciaS.add(minimo);
-            Aresta[] arestasVerticeMinimo = constroiVetorArestas(minimo);
+            Object[] arestasVerticeMinimo = minimo.getArestas().toArray();   //constroiVetorArestas(minimo);
             for (int i = 0; i < arestasVerticeMinimo.length; i++) {
-                Vertice adjcenteAtual = arestasVerticeMinimo[i].getFim();
-                int pesoLigacao = arestasVerticeMinimo[i].getPeso();
+                Vertice adjcenteAtual = ((Aresta) arestasVerticeMinimo[i]).getFim();
+                int pesoLigacao = ((Aresta) arestasVerticeMinimo[i]).getPeso();
                 if (adjcenteAtual.getDistanciaOrigem() > minimo.getDistanciaOrigem() + pesoLigacao) {
                     adjcenteAtual.setDistanciaOrigem(minimo.getDistanciaOrigem() + pesoLigacao);
                     adjcenteAtual.setVerticeAntecessor(minimo);
@@ -50,34 +49,6 @@ public class Dijkstra {
             }
         }
         return distanciaS;
-    }
-
-    /**
-     * Método que reinicializa a lista de custos dos vertices
-     *
-     * @param origem Vertice referencial
-     * @param distanciaQ Lista de custos
-     */
-    private void reinicializaNos(Vertice origem, LinkedList<Vertice> distanciaQ) {
-        LinkedList<Vertice> vertices = distanciaQ;
-        for (int i = 0; i < vertices.size(); i++) {
-            Vertice atual = vertices.get(i);
-            if (atual.equals(origem)) {
-                atual.setDistanciaOrigem(0);
-                atual.setVerticeAntecessor(null);
-            }
-            else {
-                int pesoLigacaoOrigem = atual.getPesoLigacaoCom(origem);
-                if (pesoLigacaoOrigem > -1) {
-                    atual.setDistanciaOrigem(pesoLigacaoOrigem);
-                    atual.setVerticeAntecessor(origem);
-                }
-                else {
-                    atual.setDistanciaOrigem(Integer.MAX_VALUE);
-                    atual.setVerticeAntecessor(null);
-                }
-            }
-        }
     }
 
     /**
@@ -105,20 +76,4 @@ public class Dijkstra {
         }
         return null; // Retorna null caso não haja vertices
     }
-
-    /**
-     * Método que constroi vetores de aresta
-     *
-     * @param minimo Verticie com distância menor
-     * @return Retorna um vetor com o tamanho da aresta
-     */
-    private Aresta[] constroiVetorArestas(Vertice minimo) {
-        int tamanho = minimo.getArestas().size();
-        Aresta[] vetor = new Aresta[tamanho];
-        for (int i = 0; i < tamanho; i++) {
-            vetor[i] = minimo.getArestas().get(i);
-        }
-        return vetor;
-    }
-
 }
